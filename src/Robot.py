@@ -4,7 +4,9 @@ import pygame
 
 
 class Robot:
-    def __init__(self, initPose, constants_filename, preview_image_filename):
+    def __init__(
+        self, initPose, field_preview_size, constants_filename, preview_image_filename
+    ):
         self.x, self.y, self.heading = initPose
         self.effected_position = (0, 0)  # Preview Position (changes due to rotation)
 
@@ -13,6 +15,8 @@ class Robot:
 
         self.preview_image_filename = preview_image_filename
         self.generate_preview()
+
+        self.field_preview_size = field_preview_size
 
     def generate_preview(self):
         image = Image.open(self.preview_image_filename)
@@ -29,11 +33,11 @@ class Robot:
         rotated_image = pygame.transform.rotate(ortho_image, self.heading)
 
         original_size = ortho_image.get_size()
-        rotated_size = rotated_image.get_size()
+        self.rotated_size = rotated_image.get_size()
 
         self.rotated_position = (
-            self.x + (original_size[0] - rotated_size[0]) // 2,
-            self.y + (original_size[1] - rotated_size[1]) // 2,
+            self.x + (original_size[0] - self.rotated_size[0]) // 2,
+            self.y + (original_size[1] - self.rotated_size[1]) // 2,
         )
 
         self.preview = rotated_image.copy()
@@ -49,8 +53,16 @@ class Robot:
         return self.preview
 
     def set_position(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = (
+            x
+            if x >= 0 and x < self.field_preview_size[0] - self.rotated_size[0]
+            else self.x
+        )
+        self.y = (
+            y
+            if y >= 0 and y < self.field_preview_size[1] - self.rotated_size[1]
+            else self.y
+        )
 
     def set_heading(self, heading):
         self.heading = heading

@@ -5,6 +5,7 @@ from pygame_gui import UIManager
 from PIL import Image
 
 from src.Robot import Robot
+from src.ControlPanel import ControlPanel
 
 
 def createImageBG(image, viewport_size):
@@ -26,12 +27,15 @@ viewport_size = (
     int(WIDTH * background_image.size[1] / background_image.size[0]),
 )
 
+robot = Robot(
+    initPose=(200, 20, 30),
+    field_preview_size=viewport_size,
+    constants_filename="./src/constants/robot_constants.json",
+    preview_image_filename="./assets/fll_robot.png",
+)
+
 win = pygame.display.set_mode(viewport_size)
 pygame.display.set_caption("FLL Path Gen")
-
-robot = Robot(
-    (200, 20, 30), "./src/constants/robot_constants.json", "./assets/fll_robot.png"
-)
 
 ui_manager = UIManager(viewport_size)
 
@@ -90,7 +94,7 @@ while run:
 
     robot.set_heading(slider.get_current_value())
 
-    print(robot.get_pose())
+    print(viewport_size)
 
     pygame.display.update()
 
