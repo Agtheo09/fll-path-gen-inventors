@@ -1,18 +1,16 @@
 import pygame
-import pygame_gui
 from pygame_gui import UIManager
-
-from PIL import Image
 
 from src.Robot import Robot
 from src.ControlPanel import ControlPanel
 from src.Field import Field
 from src.Normalizer import Normalizer
+from src.Previewer import Previewer
 
 # Init Window
 pygame.init()
 
-WIDTH = 1400
+WIDTH = 1100  # Window Width
 
 field = Field(WIDTH, "./assets/field-masterpiece.png")
 
@@ -23,7 +21,8 @@ background_image = field.getBackground()
 
 win = pygame.display.set_mode(viewport_size)
 pygame.display.set_caption("FLL Path Gen")
-win.fill((230, 230, 230))
+pygame.display.set_icon(pygame.image.load("./assets/logo/path-gen-logo-circlural.png"))
+win.fill((230, 230, 230))  # gray
 
 normalizer = Normalizer(
     WIDTH,
@@ -31,8 +30,15 @@ normalizer = Normalizer(
     "./src/constants/robot_constants.json",
 )
 
+previewer = Previewer(
+    "./assets/fll_robot.png",
+    field_size,
+    normalizer.get_size_ratio(),
+    normalizer.get_px_per_cm(),
+)
+
 robot = Robot(
-    initPose=(2, 80, 0),
+    initPose=(2, 80, 0),  # cm, cm, degrees
     field_preview_size=field_size,
     preview_size_ratio=normalizer.get_size_ratio(),
     px_per_cm=normalizer.get_px_per_cm(),
@@ -54,31 +60,36 @@ offset_x = 0
 offset_y = 0
 
 clock = pygame.time.Clock()
-runnning = True
+running = True
 
 
-while runnning:
+while running:
     for event in pygame.event.get():
         ui_manager.process_events(event)
 
         if event.type == pygame.QUIT:
-            runnning = False
+            running = False
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                previewer.add_pose(robot.get_pose())
+
             if event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]:
+                # Move the robot using arrow keys
                 robot.nudge(event.key)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left Click
                 if robot.cursor_over(event.pos):
+                    # On Click if cursor is over begin Dragging
                     dragging = True
                     cursorX, cursorY = event.pos
                     offset_x = cursorX - robot.getX_px()
                     offset_y = cursorY - robot.getY_px()
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:  # Left Click
+            if event.button == 1:  # 1 = Left Click
                 dragging = False  # Stop dragging
         elif event.type == pygame.MOUSEMOTION:
-            # print(offset_x, offset_y)
             if dragging:
+                # Move Robot
                 robot.set_position_px(event.pos[0] - offset_x, event.pos[1] - offset_y)
                 pass
         elif event.type == pygame.USEREVENT:
@@ -87,10 +98,14 @@ while runnning:
     win.blit(background_image, (0, 0))  # Draw the field
     win.blit(robot.get_preview(), robot.get_effected_position())  # Draw the robot
 
+    for pixel_coordinates, pose_preview in previewer.get_poses_history_previews():
+        win.blit(pose_preview, pixel_coordinates)
+
     ui_manager.update(clock.tick(60) / 1000.0)
 
     ui_manager.draw_ui(win)
 
     pygame.display.update()
+
 
 pygame.quit()

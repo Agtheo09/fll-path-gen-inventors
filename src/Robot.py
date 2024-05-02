@@ -58,7 +58,7 @@ class Robot:
                     / image.size[0]
                 ),
             )
-        )  # TODO
+        )
 
         self.ortho_image = pygame.image.fromstring(
             resized.tobytes(), resized.size, resized.mode
