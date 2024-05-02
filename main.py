@@ -110,14 +110,12 @@ while running:
 
     # ------------------------ Draw Pose History ------------------------- #
 
-    # for pixel_coordinates, pose_preview in previewer.get_poses_history_previews():
-    #     win.blit(pose_preview, pixel_coordinates)
+    for pixel_coordinates, pose_preview in previewer.get_poses_history_previews():
+        win.blit(pose_preview, pixel_coordinates)
 
     # ---------------------------- Draw Robot ---------------------------- #
     previewer.update_main_preview(robot.get_effected_pose())
     win.blit(previewer.get_main_preview(), robot.get_effected_position())
-    # win.blit(previewer.get_main_preview(), (1000, 700))
-    # print(field_size)
 
     # ----------------------------- UI Utils ----------------------------- #
     ui_manager.update(clock.tick(60) / 1000.0)
@@ -125,7 +123,5 @@ while running:
     ui_manager.draw_ui(win)
 
     pygame.display.update()
-
-    print(robot.get_effected_pose())
 
 pygame.quit()
