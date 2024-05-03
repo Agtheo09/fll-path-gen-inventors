@@ -27,8 +27,8 @@ class Robot:
         self.load_constants()
 
         self.x, self.y, self.heading = initPose  # Position (cm), Heading (degrees)
-        self.x_px = int(self.cmToPx(self.x))
-        self.y_px = int(self.cmToPx(self.y))
+        self.x_px = self.cmToPx(self.x)
+        self.y_px = self.cmToPx(self.y)
 
         self.calculate_preview_size()
 
@@ -45,7 +45,7 @@ class Robot:
             self.wheel_diameter = constants["wheel-diameter"]
 
     def cmToPx(self, cm):
-        return cm * self.px_per_cm
+        return int(cm * self.px_per_cm)
 
     def pxToCm(self, px):
         return px / self.px_per_cm
@@ -104,10 +104,12 @@ class Robot:
             else self.y
         )
 
-        self.x_px = int(self.cmToPx(self.x))
-        self.y_px = int(self.cmToPx(self.y))
+        self.x_px = self.cmToPx(self.x)
+        self.y_px = self.cmToPx(self.y)
 
-        self.effected_position = self.calculate_effected_position(self.x_px, self.y_px)
+        self.effected_position = self.calculate_effected_position(
+            self.x_px, self.y_px
+        )  # Position Changed due to rotation
 
     def set_position_px(self, newXPx, newYPx):
         newCoordinates = self.calculate_effected_position(newXPx, newYPx)
@@ -127,10 +129,12 @@ class Robot:
             else self.y_px
         )
 
-        self.x = int(self.pxToCm(self.x_px))
-        self.y = int(self.pxToCm(self.y_px))
+        self.x = self.pxToCm(self.x_px)
+        self.y = self.pxToCm(self.y_px)
 
-        self.effected_position = self.calculate_effected_position(self.x_px, self.y_px)
+        self.effected_position = self.calculate_effected_position(
+            self.x_px, self.y_px
+        )  # Position Changed due to rotation
 
     def set_heading(self, heading):
         self.heading = heading

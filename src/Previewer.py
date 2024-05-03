@@ -1,11 +1,14 @@
-from PIL import Image
+from PIL import Image, ImageOps
 import pygame
+import numpy as np
 
 
 class Previewer:
     mainPreview = None
     poses_history = []
     poses_history_previews = []
+
+    greying_alpha = 0.4
 
     def __init__(
         self, robot_image_path, field_preview_size, preview_size_ratio, px_per_cm
@@ -25,8 +28,14 @@ class Previewer:
             )
         )
 
-        self.ortho_image = pygame.image.fromstring(
+        resized_greyed = ImageOps.grayscale(resized).convert("RGBA")
+
+        self.main_preview_templete = pygame.image.fromstring(
             resized.tobytes(), resized.size, resized.mode
+        )
+
+        self.history_preview_templete = pygame.image.fromstring(
+            resized_greyed.tobytes(), resized_greyed.size, resized_greyed.mode
         )
 
         # Save the px_per_cm ratio
@@ -34,7 +43,7 @@ class Previewer:
 
     # -------------------------------------- Util -------------------------------------- #
     def get_ortho_preview_size(self):
-        return self.ortho_image.get_size()
+        return self.main_preview_templete.get_size()
 
     def cmToPx(self, cm):
         return cm * self.px_per_cm
@@ -42,8 +51,11 @@ class Previewer:
     def pxToCm(self, px):
         return px / self.px_per_cm
 
-    def pose_to_preview(self, pose):
-        return pygame.transform.rotate(self.ortho_image, pose[2])
+    def pose_to_preview(self, pose, isMain=True):
+        if isMain:
+            return pygame.transform.rotate(self.main_preview_templete, pose[2])
+        else:
+            return pygame.transform.rotate(self.history_preview_templete, pose[2])
 
     # ---------------------------------- Main Preview ---------------------------------- #
 
@@ -62,7 +74,7 @@ class Previewer:
         self.poses_history_previews.append(
             [
                 (pose[0], pose[1]),
-                self.pose_to_preview(pose),
+                self.pose_to_preview(pose, False),
             ]
         )
 

@@ -55,6 +55,7 @@ controlPanel = ControlPanel(
     viewport_size,
     (viewport_size[0], 250),  # width is the same as the field height is 250
     lambda theta: robot.set_heading(theta),
+    lambda: previewer.add_pose(robot.get_effected_pose()),
 )
 
 # ---------------------------- Util VAriables ---------------------------- #
@@ -74,9 +75,6 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                previewer.add_pose(robot.get_effected_pose())
-
             if event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]:
                 # Move the robot using arrow keys
                 robot.nudge(event.key)
@@ -103,7 +101,7 @@ while running:
     # win.clear()
 
     # # ----------------------- Draw Background Color ---------------------- #
-    win.fill((230, 230, 230))  # gray
+    win.fill((200, 200, 200))  # gray
 
     # ---------------------------- Draw Field ---------------------------- #
     win.blit(background_image, (0, 0))
@@ -123,5 +121,7 @@ while running:
     ui_manager.draw_ui(win)
 
     pygame.display.update()
+
+    print(robot.get_pose())
 
 pygame.quit()
