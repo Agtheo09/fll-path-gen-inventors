@@ -46,8 +46,8 @@ class Previewer:
     def pxToCm(self, px):
         return px / self.px_per_cm
 
-    def preview_robot(self, robot, is_main):
-        if is_main:
+    def preview_robot(self, robot):
+        if robot.get_isMain():
             return pygame.transform.rotate(self.preview_templete, robot.get_pose()[2])
 
         return pygame.transform.rotate(self.grey_preview_templete, robot.get_pose()[2])
@@ -55,7 +55,7 @@ class Previewer:
     # ----------------------------- Main Preview ----------------------------- #
 
     def update_main_preview(self, robot):
-        self.mainPreview = self.preview_robot(robot, True)
+        self.mainPreview = self.preview_robot(robot)
 
     def get_main_preview(self):
         return self.mainPreview

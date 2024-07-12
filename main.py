@@ -2,7 +2,6 @@ import pygame
 from pygame_gui import UIManager
 
 from src.Robot import Robot
-from src.Robot2 import Robot2
 from src.ControlPanel import ControlPanel
 from src.Field import Field
 from src.Normalizer import Normalizer
@@ -17,7 +16,10 @@ WIDTH = 1100  # Window Width (Configurable)
 field = Field(WIDTH, "./assets/field-masterpiece.png")
 
 field_size = field.getFieldSize()
-viewport_size = (field_size[0], field_size[1] + 250)
+viewport_size = (
+    field_size[0],
+    field_size[1] + 250,
+)  # 250 = height of the control panel
 #
 
 win = pygame.display.set_mode(viewport_size)
@@ -40,7 +42,7 @@ previewer = Previewer(
     normalizer.get_px_per_cm(),
 )
 
-main_robot = Robot2(
+main_robot = Robot(
     init_pose=(2, 80, 0),  # cm, cm, degrees
     field_preview_size=field_size,
     preview_size_ratio=normalizer.get_size_ratio(),
@@ -85,12 +87,12 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left Click
                 for i, robot in enumerate(robots):
-                    if robot.is_cursor_over(event.pos):
+                    if robot.is_cursor_over_smart(event.pos):
                         # On Click if cursor is over begin Dragging
                         dragging_idx = i
 
                         # Priority to Main Robot
-                        if robots[0].is_cursor_over(event.pos):
+                        if robots[0].is_cursor_over_smart(event.pos):
                             dragging_idx = 0
 
                         cursorX, cursorY = event.pos
@@ -122,7 +124,7 @@ while running:
     # ----------------------------- Draw Clones ------------------------------ #
     for clone in robots[1:]:
         win.blit(
-            previewer.preview_robot(clone, False),
+            previewer.preview_robot(clone),
             clone.get_effected_position(),
         )
 
@@ -137,8 +139,9 @@ while running:
 
     ui_manager.draw_ui(win)
 
-    pygame.display.update()
+    # for pt in robots[0].get_preview_points():
+    #     pygame.draw.circle(win, (255, 255, 0), pt, 5)
 
-    # print(len(robots))
+    pygame.display.update()
 
 pygame.quit()
