@@ -3,11 +3,13 @@ import math
 import pygame
 import numpy as np
 import cv2 as cv
+from enum import Enum
 
 
 class Robot:
     isMain = False
     nudge_step = 2  # px
+    selected = False
 
     def __init__(
         self,
@@ -230,3 +232,12 @@ class Robot:
 
     def get_isMain(self):
         return self.isMain
+
+    def select_robot(self):  # Selects the robot for nudging
+        self.selected = True
+
+    def deselect_robot(self):
+        self.selected = False
+
+    def is_selected(self):
+        return self.selected

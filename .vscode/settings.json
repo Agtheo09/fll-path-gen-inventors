@@ -17,6 +17,7 @@
     "KEYDOWN",
     "MOUSEBUTTONDOWN",
     "MOUSEBUTTONUP",
+    "peos",
     "USEREVENT"
   ]
 }
