@@ -1,0 +1,22 @@
+{
+  "python.formatting.provider": "none",
+  "python.formatting.blackArgs": ["--line-length", "80"],
+  "python.linting.enabled": true,
+  "isort.args": ["--profiles", "black"],
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "editor.rulers": [80],
+  "editor.fontFamily": "Fira Code",
+  "cSpell.words": [
+    "blit",
+    "KEYDOWN",
+    "MOUSEBUTTONDOWN",
+    "MOUSEBUTTONUP",
+    "USEREVENT"
+  ]
+}
