@@ -44,7 +44,7 @@ class ControlPanel:
             manager=self.ui_manager,
         )
 
-    def proccess_events(self, event):
+    def process_events(self, event):
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.set_heading_btn:
