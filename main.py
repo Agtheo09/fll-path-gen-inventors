@@ -7,6 +7,7 @@ from src.ControlPanel import ControlPanel
 from src.Field import Field
 from src.Normalizer import Normalizer
 from src.Previewer import Previewer
+from src.PathCreator import PathCreator
 
 # ------------------------------- Init Window -------------------------------- #
 pygame.init()
@@ -55,13 +56,16 @@ robots = [main_robot]
 
 ui_manager = UIManager(viewport_size)
 
-controlPanel = ControlPanel(
+control_panel = ControlPanel(
     ui_manager,
     viewport_size,
     (viewport_size[0], 250),  # width is the same as the field height is 250
-    lambda theta: robots[0].set_heading(theta),
+    lambda theta, selected_idx: robots[selected_idx].set_heading(theta),
     lambda: robots.append(robots[0].generate_clone()),
+    lambda: path_creator.generate_path(robots[1:], "Path"),
 )
+
+path_creator = PathCreator(win, "./src/constants/robot_constants.json")
 
 # ------------------------------ Util VAriables ------------------------------ #
 dragging_idx = -1  # -1 means no dragging, 0 main robot, 1+ clones
@@ -93,12 +97,12 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left Click
                 for i, robot in enumerate(robots):
-                    if robot.is_cursor_over_smart(event.pos):
+                    if robot.is_cursor_over(event.pos):
                         # On Click if cursor is over begin Dragging
                         dragging_idx = i
 
                         # Priority to Main Robot
-                        if robots[0].is_cursor_over_smart(event.pos):
+                        if robots[0].is_cursor_over(event.pos):
                             dragging_idx = 0
 
                         cursorX, cursorY = event.pos
@@ -112,6 +116,9 @@ while running:
             if event.button == 1:  # 1 = Left Click
                 dragging_idx = -1
 
+                if event.pos[1] > field_size[1]:  # Clicked on the control panel
+                    continue
+
                 if (
                     math.fabs(event.pos[0] - init_click_x) < 2
                     and math.fabs(event.pos[1] - init_click_y) < 2
@@ -124,7 +131,7 @@ while running:
 
                             selected_robot_idx = i
 
-                            if robots[0].is_cursor_over_smart(
+                            if robots[0].is_cursor_over(
                                 event.pos
                             ):  # Overwrite if main robot overlaps
                                 selected_robot_idx = 0
@@ -155,7 +162,9 @@ while running:
                 )
                 pass
         elif event.type == pygame.USEREVENT:
-            controlPanel.process_events(event)
+            control_panel.process_events(event)
+
+    control_panel.update_selected_robot(selected_robot_idx)
 
     # # ---------------------------- Reset Window ---------------------------- #
     # win.clear() # TODO Check this if it is malakia
@@ -166,11 +175,14 @@ while running:
     # ------------------------------ Draw Field ------------------------------ #
     win.blit(background_image, (0, 0))
 
+    # ---------------------------- Draw Path Lines --------------------------- #
+    # path_creator.show_lines(robots[1:])
+
     # ----------------------------- Draw Clones ------------------------------ #
     for clone in robots[1:]:
         win.blit(
             previewer.preview_robot(clone),
-            clone.get_effected_position(),
+            clone.get_gui_preview_position(),
         )
 
     # --------------------------- Draw Main Robot ---------------------------- #
@@ -178,8 +190,10 @@ while running:
 
     win.blit(
         previewer.preview_robot(robots[0]),
-        robots[0].get_effected_position(),
+        robots[0].get_gui_preview_position(),
     )
+
+    path_creator.show_lines(robots[1:])
 
     # ------------------------------- UI Utils ------------------------------- #
     ui_manager.update(clock.tick(60) / 1000.0)

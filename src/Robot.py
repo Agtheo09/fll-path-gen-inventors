@@ -42,8 +42,6 @@ class Robot:
 
         self.isMain = isMainRobot
 
-        self.is_cursor_over_smart((0, 0))  # TODO remove this malakia
-
     # -------------------------------------- Util -------------------------------------- #
     def load_constants(self):
         with open(self.constants_filename, "r") as file:
@@ -174,7 +172,10 @@ class Robot:
     def get_position(self):
         return (self.x, self.y)
 
-    def get_effected_position(self):
+    def get_center_position(self):
+        return (self.x + self.width / 2, self.y + self.length / 2)
+
+    def get_gui_preview_position(self):
         return self.effected_position
 
     def get_heading(self):
@@ -183,26 +184,22 @@ class Robot:
     def get_pose(self):
         return (self.x, self.y, self.heading)
 
+    def get_center_pose(self):
+        return (self.x + self.width / 2, self.y + self.length / 2, self.heading)
+
     def get_pose_px(self):
         return (self.x_px, self.y_px, self.heading)
 
-    def get_effected_pose(self):
-        return (*self.effected_position, self.heading)
-
-    # ----------------------------- GUI Related ------------------------------ #
-    def is_cursor_over(
-        self, cursor_position
-    ):  # TODO Too Simple. THis calculated bounding box. Need to calculate the rotated box
-        cursor_x, cursor_y = cursor_position
-        rx, ry = self.effected_position
-        preview_width, preview_height = self.robot_preview_size
-
+    def get_center_pose_px(self):
+        print(self.robot_preview_size)
         return (
-            rx <= cursor_x <= rx + preview_width
-            and ry <= cursor_y <= ry + preview_height
+            self.effected_position[0] + self.robot_preview_size[0] / 2,
+            self.effected_position[1] + self.robot_preview_size[1] / 2,
+            self.heading,
         )
 
-    def is_cursor_over_smart(self, cursor_position):
+    # ----------------------------- GUI Related ------------------------------ #
+    def is_cursor_over(self, cursor_position):
         cursor_x, cursor_y = cursor_position
 
         return (
