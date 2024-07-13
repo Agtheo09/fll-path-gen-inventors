@@ -14,10 +14,13 @@
   "editor.fontFamily": "Fira Code",
   "cSpell.words": [
     "blit",
+    "dtype",
     "KEYDOWN",
+    "malakia",
     "MOUSEBUTTONDOWN",
     "MOUSEBUTTONUP",
     "peos",
+    "tobytes",
     "USEREVENT"
   ]
 }
