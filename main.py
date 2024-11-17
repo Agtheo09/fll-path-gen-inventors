@@ -14,7 +14,7 @@ pygame.init()
 WIDTH = 1100  # Window Width (Configurable)
 
 # Init Background
-field = Field(WIDTH, "./assets/field-masterpiece.png")
+field = Field(WIDTH, "./assets/field-submerged.jpg")
 
 field_size = field.getFieldSize()
 viewport_size = (
